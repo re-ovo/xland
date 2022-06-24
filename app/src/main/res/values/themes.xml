@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Xland" parent="Theme.AppCompat.DayNight.NoActionBar" />
+
+    <style name="Theme.Xland.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenBackground">@color/teal_700</item>
+        <item name="postSplashScreenTheme">@style/Theme.Xland</item>
+    </style>
+</resources>
