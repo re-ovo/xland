@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import me.rerere.xland.data.api.WebParser
 import okhttp3.OkHttpClient
 import javax.inject.Singleton
 
@@ -14,4 +15,10 @@ object NetworkModule {
     @Singleton
     fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
         .build()
+
+    @Provides
+    @Singleton
+    fun provideWebParser(
+        okHttpClient: OkHttpClient
+    ): WebParser = WebParser(okHttpClient)
 }
