@@ -1,4 +1,4 @@
-package me.rerere.xland.ui.screen.thread
+package me.rerere.xland.ui.screen.forum
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,12 +13,12 @@ import me.rerere.xland.ui.component.widget.Md3TopBar
 import me.rerere.xland.util.plus
 
 @Composable
-fun ThreadScreen(viewModel: ThreadViewModel = hiltViewModel()) {
+fun ForumScreen(viewModel: ForumViewModel = hiltViewModel()) {
     Scaffold(
         topBar = {
             Md3TopBar(
                 title = {
-                    Text("帖子内容 No.${viewModel.tid}")
+                    Text("论坛 No.${viewModel.forumId}")
                 },
                 navigationIcon = {
                     BackIcon()

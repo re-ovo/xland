@@ -13,4 +13,9 @@ interface NimingbanAPI {
     suspend fun getTimeline(
         @Query("page") page: Int
     ): List<Post>
+
+    @GET("/Api/showf")
+    suspend fun getForumContent(
+        @Query("id") id: Int
+    ): List<Post>
 }

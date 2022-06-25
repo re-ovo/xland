@@ -13,6 +13,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import me.rerere.xland.ui.component.value.LocalNavController
+import me.rerere.xland.ui.screen.forum.ForumScreen
 import me.rerere.xland.ui.screen.index.IndexScreen
 import me.rerere.xland.ui.screen.thread.ThreadScreen
 
@@ -39,6 +40,18 @@ fun NavigationUI() {
             }
 
             composable(
+                route = "${Destination.Thread.route}/{id}",
+                arguments = listOf(
+                    navArgument("id") {
+                        nullable = false
+                        type = NavType.IntType
+                    }
+                )
+            ) {
+                ForumScreen()
+            }
+
+            composable(
                 route = "${Destination.Thread.route}/{tid}",
                 arguments = listOf(
                     navArgument("tid") {
@@ -55,6 +68,7 @@ fun NavigationUI() {
 
 sealed class Destination(val route: String) {
     object Index : Destination("index")
+    object Forum: Destination("forum")
     object Thread: Destination("thread")
 }
 

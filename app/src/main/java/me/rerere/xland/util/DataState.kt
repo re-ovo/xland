@@ -7,7 +7,7 @@ sealed class DataState<out T> {
     object Loading : DataState<Nothing>()
 
     data class Error(
-        val message: String
+        val throwable: Throwable
     ) : DataState<Nothing>()
 
     data class Success<T>(
@@ -29,10 +29,10 @@ fun <T> DataState<T>.onSuccess(
 
 @Composable
 fun <T> DataState<T>.onError(
-    content: @Composable ((String) -> Unit)
+    content: @Composable ((Throwable) -> Unit)
 ): DataState<T> {
     if (this is DataState.Error) {
-        content(this.message)
+        content(this.throwable)
     }
     return this
 }

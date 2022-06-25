@@ -1,25 +1,19 @@
 package me.rerere.xland.ui.component.widget
 
 import android.graphics.Typeface
-import android.os.Build.VERSION.SDK_INT
-import android.text.Html
 import android.text.Spanned
 import android.text.style.*
-import android.widget.Toast
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.*
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -27,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
+import androidx.core.text.HtmlCompat
 import androidx.core.text.getSpans
 
 /**
@@ -65,39 +60,15 @@ fun HtmlText(
     overflow: TextOverflow = TextOverflow.Clip,
     softWrap: Boolean = true,
     maxLines: Int = Int.MAX_VALUE,
-    inlineContent: Map<String, InlineTextContent> = mapOf(),
-    onTextLayout: (TextLayoutResult) -> Unit = {},
     style: TextStyle = LocalTextStyle.current
 ) {
-    val annotatedString = if (SDK_INT <24) {
-        Html.fromHtml(text)
-    } else {
-        Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY)
-    }.toAnnotatedString(urlSpanStyle)
-
-    val uriHandler = LocalUriHandler.current
-    val context = LocalContext.current
-    val layoutResult = remember { mutableStateOf<TextLayoutResult?>(null) }
+    val annotatedString = remember(text) {
+        HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_COMPACT)
+            .toAnnotatedString(urlSpanStyle)
+    }
 
     Text(
-        modifier = modifier.pointerInput(Unit) {
-            detectTapGestures(onTap = { pos ->
-                layoutResult.value?.let { layoutResult ->
-                    val position = layoutResult.getOffsetForPosition(pos)
-                    annotatedString.getStringAnnotations(position, position)
-                        .firstOrNull()
-                        ?.let { sa ->
-                            if (sa.tag == "url") { // NON-NLS
-                                kotlin.runCatching {
-                                    uriHandler.openUri(sa.item)
-                                }.onFailure {
-                                    Toast.makeText(context, "打开失败: ${sa.item}", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        }
-                }
-            })
-        },
+        modifier = modifier,
         text = annotatedString,
         color = color,
         fontSize = fontSize,
@@ -111,28 +82,8 @@ fun HtmlText(
         overflow = overflow,
         softWrap = softWrap,
         maxLines = maxLines,
-        inlineContent = inlineContent,
-        onTextLayout = {
-            layoutResult.value = it
-            onTextLayout(it)
-        },
         style = style
     )
-}
-
-fun CharSequence.toAnnotatedString(
-    urlSpanStyle: SpanStyle = SpanStyle(
-        color = Color.Blue,
-        textDecoration = TextDecoration.Underline
-    )
-): AnnotatedString {
-    return if (this is Spanned) {
-        this.toAnnotatedString(urlSpanStyle)
-    } else {
-        buildAnnotatedString {
-            append(this@toAnnotatedString.toString())
-        }
-    }
 }
 
 fun Spanned.toAnnotatedString(

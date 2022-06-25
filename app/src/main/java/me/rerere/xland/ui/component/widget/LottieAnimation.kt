@@ -17,10 +17,31 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import me.rerere.xland.R
 
 @Composable
+fun LoadingAnimation(
+    modifier: Modifier
+) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        val res by rememberLottieComposition(
+            spec = LottieCompositionSpec.RawRes(R.raw.enjoying_sloth)
+        )
+        LottieAnimation(
+            modifier = Modifier
+                .fillMaxWidth(0.33f)
+                .aspectRatio(1f),
+            composition = res,
+            iterations = LottieConstants.IterateForever
+        )
+    }
+}
+
+@Composable
 fun ErrorAnimation(
     modifier: Modifier,
     throwable: Throwable,
-    onClick: () -> Unit
+    onClick: () -> Unit = {}
 ) {
     Box(
         modifier = modifier,

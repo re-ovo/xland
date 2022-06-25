@@ -23,4 +23,6 @@ class ContentRepo @Inject constructor(
             }
         }
     }
+
+    suspend fun getForumList() = nimingbanAPI.getForumList()
 }
