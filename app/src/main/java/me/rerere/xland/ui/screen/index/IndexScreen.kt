@@ -9,17 +9,17 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Timeline
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import me.rerere.md3compat.ThemeChooser
 import me.rerere.xland.R
-import me.rerere.xland.ui.Destination
 import me.rerere.xland.ui.component.value.LocalNavController
 import me.rerere.xland.ui.component.widget.Md3BottomNavigation
 import me.rerere.xland.ui.component.widget.Md3TopBar
@@ -65,16 +65,10 @@ fun IndexScreen(viewModel: IndexViewModel = hiltViewModel()) {
         ) {
             when (it) {
                 0 -> {
-                    val state = viewModel.timelinePager.collectAsLazyPagingItems()
-                    TimelinePage(
-                        state = state,
-                        onRefresh = {
-                            state.refresh()
-                        },
-                        onClickPost = { post ->
-                            navController.navigate("${Destination.Thread.route}/${post.tid}")
-                        }
-                    )
+                    val state by viewModel.apiResponse.collectAsState()
+                    TimelinePage(state) {
+
+                    }
                 }
                 else -> {
                     ThemeChooser()
