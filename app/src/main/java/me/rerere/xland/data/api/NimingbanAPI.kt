@@ -18,4 +18,10 @@ interface NimingbanAPI {
     suspend fun getForumContent(
         @Query("id") id: Int
     ): List<Post>
+
+    @GET("/Api/thread")
+    suspend fun getThread(
+        @Query("id") id: Long,
+        @Query("page") page: Int
+    ): Post
 }

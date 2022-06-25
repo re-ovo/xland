@@ -9,25 +9,31 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Comment
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import me.rerere.slantedtext.SlantedMode
 import me.rerere.slantedtext.SlantedText
 import me.rerere.xland.data.model.Post
+import me.rerere.xland.util.TimeUtil
+
+enum class PostCardType {
+    Preview,
+    Detail
+}
 
 @Composable
 fun PostCard(
     post: Post,
-    showReply: Boolean = false,
-    onClick: () -> Unit
+    type: PostCardType,
+    onClick: (() -> Unit)? = null
 ) {
     SlantedText(
         text = "SAGE",
@@ -38,86 +44,109 @@ fun PostCard(
         thickness = 10.dp,
         textSize = 15.sp
     ) {
-        Card(
-            onClick = onClick
-        ) {
-            Column(
-                modifier = Modifier.padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                // info
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
+        val content = remember {
+            movableContentOf {
+                Column(
+                    modifier = Modifier.padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text(
-                        text = post.user_hash,
-                        color = if (post.admin == 1) Color.Red else Color.Unspecified
-                    )
+                    // info
+                    ProvideTextStyle(MaterialTheme.typography.bodyMedium) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
+                            Text(
+                                text = post.user_hash,
+                                color = if (post.admin == 1) Color.Red else Color.Unspecified
+                            )
 
-                    Text(
-                        text = post.fName
-                    )
+                            Text(
+                                text = post.fName ?: "No.${post.id}"
+                            )
 
-                    Text(
-                        text = post.now
-                    )
-                }
+                            Text(
+                                text = TimeUtil.convertTimeToBetterFormat(post.now)
+                            )
+                        }
+                    }
 
-                // content
-                ProvideTextStyle(MaterialTheme.typography.bodySmall) {
-                    HtmlText(
-                        text = post.content
-                    )
-                }
+                    // content
+                    ProvideTextStyle(MaterialTheme.typography.bodySmall) {
+                        HtmlText(
+                            text = post.content,
+                            maxLines = if (type == PostCardType.Preview) 5 else Int.MAX_VALUE
+                        )
+                    }
 
-                // 回复预览
-                if (showReply) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        val textSpinner by produceState(initialValue = "...") {
-                            while (isActive) {
-                                post.Replies.forEach {
-                                    value = it.content
+                    if(post.img.isNotEmpty()) {
+                        AsyncImage(
+                            model = "https://image.nmb.fastmirror.org/thumb/${post.img}${post.ext}",
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxWidth(),
+                            contentScale = ContentScale.FillWidth
+                        )
+                    }
+
+                    // 回复预览
+                    if (type == PostCardType.Preview) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            val textSpinner by produceState(initialValue = "...") {
+                                while (isActive) {
+                                    post.Replies.forEach {
+                                        value = it.content
+                                        delay(1500)
+                                    }
                                     delay(1500)
                                 }
-                                delay(1500)
                             }
-                        }
-                        AnimatedContent(
-                            targetState = textSpinner,
-                            transitionSpec = {
-                                slideInVertically(
-                                    initialOffsetY = { -it },
-                                    animationSpec = tween()
-                                ) with slideOutVertically(
-                                    animationSpec = tween(),
-                                    targetOffsetY = { it }
-                                )
-                            },
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            ProvideTextStyle(MaterialTheme.typography.labelSmall) {
-                                HtmlText(
-                                    text = it,
-                                    maxLines = 1
-                                )
+                            AnimatedContent(
+                                targetState = textSpinner,
+                                transitionSpec = {
+                                    slideInVertically(
+                                        initialOffsetY = { -it },
+                                        animationSpec = tween()
+                                    ) with slideOutVertically(
+                                        animationSpec = tween(),
+                                        targetOffsetY = { it }
+                                    )
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                ProvideTextStyle(MaterialTheme.typography.labelSmall) {
+                                    HtmlText(
+                                        text = it,
+                                        maxLines = 1
+                                    )
+                                }
                             }
-                        }
 
-                        Icon(
-                            imageVector = Icons.Outlined.Comment,
-                            contentDescription = null,
-                            modifier = Modifier.size(17.dp)
-                        )
-                        ProvideTextStyle(MaterialTheme.typography.labelSmall) {
-                            Text(post.ReplyCount.toString())
+                            Icon(
+                                imageVector = Icons.Outlined.Comment,
+                                contentDescription = null,
+                                modifier = Modifier.size(17.dp)
+                            )
+                            ProvideTextStyle(MaterialTheme.typography.labelSmall) {
+                                Text(post.ReplyCount.toString())
+                            }
                         }
                     }
                 }
+            }
+        }
+        if (onClick != null) {
+            Card(
+                onClick = onClick
+            ) {
+                content()
+            }
+        } else {
+            Card {
+                content()
             }
         }
     }

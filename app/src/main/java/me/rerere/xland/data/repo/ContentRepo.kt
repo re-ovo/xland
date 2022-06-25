@@ -25,4 +25,6 @@ class ContentRepo @Inject constructor(
     }
 
     suspend fun getForumList() = nimingbanAPI.getForumList()
+
+    suspend fun getThread(id: Long, page: Int): Post = nimingbanAPI.getThread(id, page)
 }

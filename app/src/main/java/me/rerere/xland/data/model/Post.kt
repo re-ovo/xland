@@ -9,7 +9,7 @@ data class Post(
     val content: String,
     val ext: String,
     val fid: Int,
-    var fName: String,
+    var fName: String?,
     val id: Int,
     val img: String,
     val name: String,

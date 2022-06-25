@@ -73,7 +73,8 @@ fun ForumListPage(viewModel: IndexViewModel) {
                                     style = MaterialTheme.typography.titleLarge
                                 )
                                 HtmlText(
-                                    text = forum.msg
+                                    text = forum.msg,
+                                    style = MaterialTheme.typography.labelMedium
                                 )
                             }
                         }

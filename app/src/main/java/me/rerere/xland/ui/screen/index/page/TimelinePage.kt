@@ -16,6 +16,7 @@ import me.rerere.xland.data.model.Post
 import me.rerere.xland.ui.Destination
 import me.rerere.xland.ui.component.value.LocalNavController
 import me.rerere.xland.ui.component.widget.PostCard
+import me.rerere.xland.ui.component.widget.PostCardType
 
 @Composable
 fun TimelinePage(
@@ -23,7 +24,9 @@ fun TimelinePage(
 ) {
     val navController = LocalNavController.current
     SwipeRefresh(
-        state = rememberSwipeRefreshState(state.loadState.refresh is LoadState.Loading),
+        state = rememberSwipeRefreshState(
+            state.loadState.refresh is LoadState.Loading
+        ),
         onRefresh = {
             state.refresh()
         }
@@ -36,7 +39,7 @@ fun TimelinePage(
             items(state) {
                 PostCard(
                     post = it!!,
-                    showReply = true
+                    type = PostCardType.Preview
                 ) {
                     navController.navigate("${Destination.Thread.route}/${it.id}")
                 }
