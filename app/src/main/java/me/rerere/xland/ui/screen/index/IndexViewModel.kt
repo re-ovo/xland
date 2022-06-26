@@ -18,29 +18,27 @@ private const val TAG = "IndexViewModel"
 @HiltViewModel
 class IndexViewModel @Inject constructor(
     private val contentRepo: ContentRepo,
-): ViewModel() {
+) : ViewModel() {
     val timelinePager = Pager(
         config = PagingConfig(
             pageSize = 20,
-            initialLoadSize = 20,
-            prefetchDistance = 4
+            prefetchDistance = 2
         ),
         pagingSourceFactory = {
             object : PagingSource<Int, Post>() {
                 override fun getRefreshKey(state: PagingState<Int, Post>): Int {
-                    return 0
+                    return 1
                 }
 
                 override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Post> {
-                    val curr = params.key ?: 1
+                    val curr = params . key ?: 1
                     Log.i(TAG, "load: load timeline of page $curr")
                     return kotlin.runCatching {
                         LoadResult.Page(
                             data = contentRepo.getTimeline(curr),
-                            prevKey = if(curr == 1) null else curr - 1,
+                            prevKey = if (curr <= 1) null else curr - 1,
                             nextKey = curr + 1
                         )
-
                     }.getOrElse {
                         it.printStackTrace()
                         LoadResult.Error(it)

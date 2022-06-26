@@ -6,7 +6,7 @@ buildscript {
         okhttp_version = '5.0.0-alpha.8'
         exoplayer_version = '2.18.0'
         lottie_version = '5.2.0'
-        paging_version = "3.1.1"
+        paging_version = "3.2.0-alpha01"
         acc_version = '0.24.12-rc'
         retrofit_version = '2.9.0'
         room_version = "2.5.0-alpha02"

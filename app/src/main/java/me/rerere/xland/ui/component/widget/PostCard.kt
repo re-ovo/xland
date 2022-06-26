@@ -1,24 +1,18 @@
 package me.rerere.xland.ui.component.widget
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.with
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Comment
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.movableContentOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import me.rerere.slantedtext.SlantedMode
 import me.rerere.slantedtext.SlantedText
 import me.rerere.xland.data.model.Post
@@ -44,7 +38,7 @@ fun PostCard(
         thickness = 10.dp,
         textSize = 15.sp
     ) {
-        val content = remember {
+        val content = remember(post) {
             movableContentOf {
                 Column(
                     modifier = Modifier.padding(12.dp),
@@ -55,7 +49,7 @@ fun PostCard(
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceAround
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             Text(
                                 text = post.user_hash,
@@ -72,8 +66,16 @@ fun PostCard(
                         }
                     }
 
+                    // title
+                    if(post.title != "无标题") {
+                        Text(
+                            text = post.title,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+
                     // content
-                    ProvideTextStyle(MaterialTheme.typography.bodySmall) {
+                    ProvideTextStyle(MaterialTheme.typography.bodyMedium) {
                         HtmlText(
                             text = post.content,
                             maxLines = if (type == PostCardType.Preview) 5 else Int.MAX_VALUE
@@ -81,16 +83,11 @@ fun PostCard(
                     }
 
                     if(post.img.isNotEmpty()) {
-                        AsyncImage(
-                            model = "https://image.nmb.fastmirror.org/thumb/${post.img}${post.ext}",
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxWidth(),
-                            contentScale = ContentScale.FillWidth
-                        )
+                        ExpandableImage(path = post.img, ext = post.ext)
                     }
 
                     // 回复预览
-                    if (type == PostCardType.Preview) {
+                    /*if (type == PostCardType.Preview) {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
                             verticalAlignment = Alignment.CenterVertically
@@ -134,7 +131,7 @@ fun PostCard(
                                 Text(post.ReplyCount.toString())
                             }
                         }
-                    }
+                    }*/
                 }
             }
         }

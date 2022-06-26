@@ -12,20 +12,25 @@ object TimeUtil {
     fun parseNimingbanTime(
         time: String
     ): Date {
-        val year = time.substring(0, 4).toInt()
-        val month = time.substring(5, 7).toInt()
-        val day = time.substring(8, 10).toInt()
-        val hour = time.substring(13, 15).toInt()
-        val minute = time.substring(16, 18).toInt()
-        val second = time.substring(19, 21).toInt()
-        return Date(
-            year - 1900,
-            month - 1,
-            day,
-            hour,
-            minute,
-            second
-        )
+        try {
+            val year = time.substring(0, 4).toInt()
+            val month = time.substring(5, 7).toInt()
+            val day = time.substring(8, 10).toInt()
+            val hour = time.substring(13, 15).toInt()
+            val minute = time.substring(16, 18).toInt()
+            val second = time.substring(19, 21).toInt()
+            return Date(
+                year - 1900,
+                month - 1,
+                day,
+                hour,
+                minute,
+                second
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return Date()
+        }
     }
 
     /**

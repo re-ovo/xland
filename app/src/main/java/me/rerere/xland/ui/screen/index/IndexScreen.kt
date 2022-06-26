@@ -11,13 +11,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
+import me.rerere.md3compat.ThemeChooser
 import me.rerere.xland.R
 import me.rerere.xland.ui.component.widget.Md3BottomNavigation
 import me.rerere.xland.ui.component.widget.Md3TopBar
@@ -28,9 +27,6 @@ import me.rerere.xland.ui.screen.index.page.TimelinePage
 fun IndexScreen(viewModel: IndexViewModel = hiltViewModel()) {
     val scope = rememberCoroutineScope()
     val pager = rememberPagerState()
-    val topBarBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
-        state = rememberTopAppBarScrollState()
-    )
     Scaffold(
         topBar = {
             Md3TopBar(
@@ -45,8 +41,7 @@ fun IndexScreen(viewModel: IndexViewModel = hiltViewModel()) {
                     ) {
                         Icon(Icons.Outlined.Search, null)
                     }
-                },
-                scrollBehavior = topBarBehavior
+                }
             )
         },
         bottomBar = {
@@ -62,18 +57,19 @@ fun IndexScreen(viewModel: IndexViewModel = hiltViewModel()) {
             count = 3,
             modifier = Modifier
                 .padding(paddingValues)
-                .fillMaxSize()
-                .nestedScroll(topBarBehavior.nestedScrollConnection),
+                .fillMaxSize(),
             state = pager,
             userScrollEnabled = false
         ) {
             when (it) {
                 0 -> {
-                    val state = viewModel.timelinePager.collectAsLazyPagingItems()
-                    TimelinePage(state)
+                    TimelinePage(viewModel)
                 }
                 1 -> {
                     ForumListPage(viewModel)
+                }
+                2 -> {
+                    ThemeChooser()
                 }
             }
         }
