@@ -1,18 +1,22 @@
 package me.rerere.xland.ui.component.widget
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.with
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ProvideTextStyle
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.movableContentOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Comment
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import me.rerere.slantedtext.SlantedMode
 import me.rerere.slantedtext.SlantedText
 import me.rerere.xland.data.model.Post
@@ -87,7 +91,7 @@ fun PostCard(
                     }
 
                     // 回复预览
-                    /*if (type == PostCardType.Preview) {
+                    if (type == PostCardType.Preview) {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
                             verticalAlignment = Alignment.CenterVertically
@@ -131,7 +135,7 @@ fun PostCard(
                                 Text(post.ReplyCount.toString())
                             }
                         }
-                    }*/
+                    }
                 }
             }
         }
