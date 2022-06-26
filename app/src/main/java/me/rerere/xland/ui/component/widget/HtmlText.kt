@@ -84,6 +84,7 @@ fun HtmlText(
             .toAnnotatedString(urlSpanStyle)
     }
 
+    // TODO: 允许组件将触摸事件传递给父组件, 也许应该自己实现一个ClickableText组件?
     ClickableText(
         modifier = modifier,
         text = annotatedString,
