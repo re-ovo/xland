@@ -91,7 +91,9 @@ fun ThreadScreen(viewModel: ThreadViewModel = hiltViewModel()) {
                     ReplyCard(
                         post = post.readSafely(),
                         reply = it!!
-                    )
+                    ) {
+
+                    }
                 }
 
                 when(pager.loadState.append) {
@@ -113,8 +115,10 @@ fun ThreadScreen(viewModel: ThreadViewModel = hiltViewModel()) {
 }
 
 @Composable
-private fun ReplyCard(post: Post?, reply: Reply) {
-    Card {
+private fun ReplyCard(post: Post?, reply: Reply, onClick: () -> Unit) {
+    Card(
+        onClick = onClick
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()

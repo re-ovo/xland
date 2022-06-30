@@ -19,7 +19,7 @@ fun ExpandableImage(
         mutableStateOf(false)
     }
     AsyncImage(
-        model = "https://image.nmb.fastmirror.org/${if(expand) "image" else "thumb"}/$path$ext",
+        model = "https://image.nmb.fastmirror.org/${if (expand) "image" else "thumb"}/$path$ext",
         contentDescription = null,
         modifier = Modifier
             .animateContentSize()
@@ -27,8 +27,10 @@ fun ExpandableImage(
                 expand = !expand
             }
             .then(
-                if(expand) Modifier.fillMaxWidth() else Modifier.heightIn(max = 100.dp)
+                if (expand) Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 20.dp) else Modifier.heightIn(max = 100.dp)
             ),
-        contentScale = if(expand) ContentScale.FillWidth else ContentScale.Fit
+        contentScale = if (expand) ContentScale.FillWidth else ContentScale.Fit
     )
 }

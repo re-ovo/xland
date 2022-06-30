@@ -3,10 +3,7 @@ package me.rerere.xland.ui.screen.index
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Category
-import androidx.compose.material.icons.outlined.People
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.Timeline
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -18,6 +15,7 @@ import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import me.rerere.md3compat.ThemeChooser
 import me.rerere.xland.R
+import me.rerere.xland.ui.component.value.LocalNavController
 import me.rerere.xland.ui.component.widget.Md3BottomNavigation
 import me.rerere.xland.ui.component.widget.Md3TopBar
 import me.rerere.xland.ui.screen.index.page.ForumListPage
@@ -27,6 +25,7 @@ import me.rerere.xland.ui.screen.index.page.TimelinePage
 fun IndexScreen(viewModel: IndexViewModel = hiltViewModel()) {
     val scope = rememberCoroutineScope()
     val pager = rememberPagerState()
+    val navController = LocalNavController.current
     Scaffold(
         topBar = {
             Md3TopBar(
@@ -40,6 +39,13 @@ fun IndexScreen(viewModel: IndexViewModel = hiltViewModel()) {
                         }
                     ) {
                         Icon(Icons.Outlined.Search, null)
+                    }
+                    IconButton(
+                        onClick = {
+                            navController.navigate("thread/50207556")
+                        }
+                    ) {
+                        Icon(Icons.Outlined.TempleHindu, null)
                     }
                 }
             )

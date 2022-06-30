@@ -3,18 +3,16 @@ package me.rerere.xland.ui.component.widget
 import android.graphics.Typeface
 import android.text.Spanned
 import android.text.style.*
-import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.LocalContentColor
+import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.takeOrElse
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -57,11 +55,6 @@ fun HtmlText(
 ) {
     val scope = rememberCoroutineScope()
 
-    // 从MD3的Text里抄来的，确保显示效果和MD3一致
-    val textColor = style.color.takeOrElse {
-        LocalContentColor.current
-    }
-
     // 是否显示隐藏的文字?
     var showHiddenText by remember(text) {
         mutableStateOf(false)
@@ -84,27 +77,44 @@ fun HtmlText(
             .toAnnotatedString(urlSpanStyle)
     }
 
-    // TODO: 允许组件将触摸事件传递给父组件, 也许应该自己实现一个ClickableText组件?
-    ClickableText(
-        modifier = modifier,
+    val layoutResult = remember { mutableStateOf<TextLayoutResult?>(null) }
+    val pressIndicator = Modifier.pointerInput(annotatedString) {
+        forEachGesture {
+            awaitPointerEventScope {
+                val event = awaitPointerEvent()
+                if(event.type == PointerEventType.Press) {
+                    event.changes.first().position.let { offset ->
+                        layoutResult.value?.let { layoutResult ->
+                            val pos = layoutResult.getOffsetForPosition(offset)
+                            // 找到点击位置所有符合的span
+                            val spans = annotatedString.spanStyles.filter {
+                                pos in it.start .. it.end
+                            }
+                            // 点击的是隐藏的文本，则显示
+                            if(spans.any { it.item.background == Color(0xFF666666) }) {
+                                event.changes.first().consume()
+                                scope.launch {
+                                    showHiddenText = true
+                                    delay(2000)
+                                    showHiddenText = false
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Text(
+        modifier = modifier.then(pressIndicator),
         text = annotatedString,
         overflow = overflow,
         softWrap = softWrap,
         maxLines = maxLines,
-        style = style.merge(TextStyle(color = textColor)),
-        onClick = { pos ->
-            // 找到点击位置所有符合的span
-            val spans = annotatedString.spanStyles.filter {
-                pos in it.start .. it.end
-            }
-            // 点击的是隐藏的文本，则显示
-            if(spans.any { it.item.background == Color(0xFF666666) }) {
-                scope.launch {
-                    showHiddenText = true
-                    delay(2000)
-                    showHiddenText = false
-                }
-            }
+        style = style,
+        onTextLayout = {
+            layoutResult.value = it
         }
     )
 }
