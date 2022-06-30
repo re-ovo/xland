@@ -23,6 +23,7 @@ import androidx.paging.compose.items
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import me.rerere.xland.data.model.Post
+import me.rerere.xland.data.model.Ref
 import me.rerere.xland.data.model.Reply
 import me.rerere.xland.ui.component.widget.*
 import me.rerere.xland.util.DataState
@@ -90,7 +91,10 @@ fun ThreadScreen(viewModel: ThreadViewModel = hiltViewModel()) {
                 items(pager) {
                     ReplyCard(
                         post = post.readSafely(),
-                        reply = it!!
+                        reply = it!!,
+                        onRequestRef = { id ->
+                            viewModel.refAPI.getRef(id)
+                        }
                     ) {
 
                     }
@@ -115,7 +119,12 @@ fun ThreadScreen(viewModel: ThreadViewModel = hiltViewModel()) {
 }
 
 @Composable
-private fun ReplyCard(post: Post?, reply: Reply, onClick: () -> Unit) {
+private fun ReplyCard(
+    post: Post?,
+    reply: Reply,
+    onRequestRef: suspend (Long) -> Ref? = { null },
+    onClick: () -> Unit
+) {
     Card(
         onClick = onClick
     ) {
@@ -161,7 +170,9 @@ private fun ReplyCard(post: Post?, reply: Reply, onClick: () -> Unit) {
             // content
             ProvideTextStyle(MaterialTheme.typography.bodySmall) {
                 HtmlText(
-                    text = reply.content
+                    text = reply.content,
+                    onRequestRef = onRequestRef,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 

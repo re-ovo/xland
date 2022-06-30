@@ -13,12 +13,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
-import me.rerere.md3compat.ThemeChooser
 import me.rerere.xland.R
 import me.rerere.xland.ui.component.value.LocalNavController
 import me.rerere.xland.ui.component.widget.Md3BottomNavigation
 import me.rerere.xland.ui.component.widget.Md3TopBar
 import me.rerere.xland.ui.screen.index.page.ForumListPage
+import me.rerere.xland.ui.screen.index.page.ProfilePage
 import me.rerere.xland.ui.screen.index.page.TimelinePage
 
 @Composable
@@ -43,6 +43,7 @@ fun IndexScreen(viewModel: IndexViewModel = hiltViewModel()) {
                     IconButton(
                         onClick = {
                             navController.navigate("thread/50207556")
+                            //navController.navigate("thread/50095250")
                         }
                     ) {
                         Icon(Icons.Outlined.TempleHindu, null)
@@ -75,7 +76,7 @@ fun IndexScreen(viewModel: IndexViewModel = hiltViewModel()) {
                     ForumListPage(viewModel)
                 }
                 2 -> {
-                    ThemeChooser()
+                    ProfilePage()
                 }
             }
         }

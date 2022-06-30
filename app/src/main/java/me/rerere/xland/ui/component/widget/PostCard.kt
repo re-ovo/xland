@@ -20,6 +20,7 @@ import kotlinx.coroutines.isActive
 import me.rerere.slantedtext.SlantedMode
 import me.rerere.slantedtext.SlantedText
 import me.rerere.xland.data.model.Post
+import me.rerere.xland.data.model.Ref
 import me.rerere.xland.util.TimeUtil
 
 enum class PostCardType {
@@ -31,6 +32,7 @@ enum class PostCardType {
 fun PostCard(
     post: Post,
     type: PostCardType,
+    onRequestRef: suspend (Long) -> Ref? = { null },
     onClick: (() -> Unit)? = null
 ) {
     SlantedText(
@@ -82,7 +84,8 @@ fun PostCard(
                     ProvideTextStyle(MaterialTheme.typography.bodyMedium) {
                         HtmlText(
                             text = post.content,
-                            maxLines = if (type == PostCardType.Preview) 5 else Int.MAX_VALUE
+                            maxLines = if (type == PostCardType.Preview) 5 else Int.MAX_VALUE,
+                            onRequestRef = onRequestRef
                         )
                     }
 

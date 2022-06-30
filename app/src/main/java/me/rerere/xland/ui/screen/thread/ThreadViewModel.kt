@@ -7,6 +7,7 @@ import androidx.paging.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import me.rerere.xland.data.api.RefAPI
 import me.rerere.xland.data.model.Post
 import me.rerere.xland.data.model.Reply
 import me.rerere.xland.data.repo.ContentRepo
@@ -16,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ThreadViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val contentRepo: ContentRepo
+    val refAPI: RefAPI,
+    private val contentRepo: ContentRepo,
 ): ViewModel() {
     val tid = checkNotNull(savedStateHandle["tid"]) as Long
     val post = MutableStateFlow<DataState<Post>>(DataState.Empty)

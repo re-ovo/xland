@@ -39,7 +39,8 @@ object TimeUtil {
      * 例如: 1分钟前, 1小时前, 1天前, 1月前, 1年前...
      */
     @JvmStatic
-    fun convertTimeToBetterFormat(time: String): String {
+    fun convertTimeToBetterFormat(time: String?): String {
+        if(time == null) return "未知"
         val date = parseNimingbanTime(time)
         val now = Date()
         val diff = now.time - date.time

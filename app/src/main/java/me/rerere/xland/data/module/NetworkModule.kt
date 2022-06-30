@@ -5,6 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import me.rerere.xland.data.api.NimingbanAPI
+import me.rerere.xland.data.api.RefAPI
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -27,4 +28,8 @@ object NetworkModule {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
         .create(NimingbanAPI::class.java)
+
+    @Provides
+    @Singleton
+    fun provideRefAPI(okHttpClient: OkHttpClient): RefAPI = RefAPI(okHttpClient)
 }
