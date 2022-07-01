@@ -70,6 +70,7 @@ sealed class Destination(val route: String) {
     object Index : Destination("index")
     object Forum: Destination("forum")
     object Thread: Destination("thread")
+    object History: Destination("history")
 }
 
 fun NavController.navigate(

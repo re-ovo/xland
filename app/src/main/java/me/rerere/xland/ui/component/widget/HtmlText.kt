@@ -5,9 +5,12 @@ import android.text.Spanned
 import android.text.style.*
 import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -20,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.core.text.HtmlCompat
 import androidx.core.text.getSpans
 import kotlinx.coroutines.delay
@@ -37,7 +41,8 @@ fun HtmlText(
     text: String,
     urlSpanStyle: SpanStyle = SpanStyle(
         color = MaterialTheme.colorScheme.secondary,
-        textDecoration = TextDecoration.Underline),
+        textDecoration = TextDecoration.Underline
+    ),
     overflow: TextOverflow = TextOverflow.Clip,
     softWrap: Boolean = true,
     maxLines: Int = Int.MAX_VALUE,
@@ -58,7 +63,7 @@ fun HtmlText(
             input = text,
             transform = { result ->
                 val content = result.value.replace("[h]", "").replace("[/h]", "")
-                if(showHiddenText) {
+                if (showHiddenText) {
                     content
                 } else {
                     "<span style=\"background: #666666; color: #666666\">$content</span>"
@@ -76,34 +81,53 @@ fun HtmlText(
     var currentRef by remember {
         mutableStateOf<Ref?>(null)
     }
-    if(showRefDialog) {
-        AlertDialog(
-            onDismissRequest = { showRefDialog = false },
-            title = {
-                Text("引用 No.${currentRef?.id}")
-            },
-            text = {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = "${currentRef?.userHash} | ${TimeUtil.convertTimeToBetterFormat(currentRef?.now)}",
-                    )
-                    HtmlText(
-                        text = currentRef?.content ?: ""
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showRefDialog = false
+    if (showRefDialog) {
+        if (currentRef != null) {
+            AlertDialog(
+                onDismissRequest = { showRefDialog = false },
+                title = {
+                    Text("引用 No.${currentRef?.id}")
+                },
+                text = {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "${currentRef?.userHash} | ${
+                                TimeUtil.convertTimeToBetterFormat(
+                                    currentRef?.now
+                                )
+                            }",
+                        )
+                        HtmlText(
+                            text = currentRef?.content ?: ""
+                        )
                     }
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showRefDialog = false
+                        }
+                    ) {
+                        Text("确定")
+                    }
+                }
+            )
+        } else {
+            Dialog(
+                onDismissRequest = {
+                    showRefDialog = false
+                }
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("确定")
+                    CircularProgressIndicator()
                 }
             }
-        )
+        }
     }
 
     val layoutResult = remember { mutableStateOf<TextLayoutResult?>(null) }
@@ -111,19 +135,19 @@ fun HtmlText(
         forEachGesture {
             awaitPointerEventScope {
                 val event = awaitPointerEvent()
-                if(event.type == PointerEventType.Press) {
+                if (event.type == PointerEventType.Press) {
                     event.changes.first().position.let { offset ->
                         layoutResult.value?.let { layoutResult ->
                             val pos = layoutResult.getOffsetForPosition(offset)
                             // 处理点击文字
                             annotatedString.getStringAnnotations(pos, pos).forEach {
                                 // 如果点击的是链接, 则打开链接
-                                if(it.tag == "url") {
+                                if (it.tag == "url") {
                                     event.changes.first().consume()
                                     context.openUrl(it.item)
                                 }
                                 // 点击隐藏的文字, 则显示隐藏的文字
-                                if(it.tag == "hidden") {
+                                if (it.tag == "hidden") {
                                     event.changes.first().consume()
                                     scope.launch {
                                         showHiddenText = true
@@ -132,14 +156,17 @@ fun HtmlText(
                                     }
                                 }
                                 // 处理点击引用
-                                if(it.tag == "reference") {
+                                if (it.tag == "reference") {
                                     event.changes.first().consume()
                                     scope.launch {
+                                        showRefDialog = true
+                                        currentRef = null
                                         val id = Regex("\\d+").find(it.item)?.value?.toLong() ?: 0L
                                         val ref = onRequestRef(id)
                                         ref?.let {
                                             currentRef = it
-                                            showRefDialog = true
+                                        } ?: kotlin.run {
+                                            showRefDialog = false
                                         }
                                     }
                                 }
@@ -189,7 +216,7 @@ fun Spanned.toAnnotatedString(
             val start = getSpanStart(colorSpan)
             val end = getSpanEnd(colorSpan)
             addStyle(SpanStyle(color = Color(colorSpan.foregroundColor)), start, end)
-            if(rawText.substring(start, end).matches(referencePattern)) {
+            if (rawText.substring(start, end).matches(referencePattern)) {
                 addStringAnnotation("reference", rawText.substring(start, end), start, end)
             }
         }
@@ -199,7 +226,7 @@ fun Spanned.toAnnotatedString(
             addStyle(SpanStyle(background = Color(it.backgroundColor)), start, end)
 
             // handle hidden tag
-            if(it.backgroundColor == Color(0xFF666666).toArgb()) {
+            if (it.backgroundColor == Color(0xFF666666).toArgb()) {
                 addStringAnnotation("hidden", "", start, end)
             }
         }
@@ -209,7 +236,12 @@ fun Spanned.toAnnotatedString(
             when (styleSpan.style) {
                 Typeface.BOLD -> addStyle(SpanStyle(fontWeight = FontWeight.Bold), start, end)
                 Typeface.ITALIC -> addStyle(SpanStyle(fontStyle = FontStyle.Italic), start, end)
-                Typeface.BOLD_ITALIC -> addStyle(SpanStyle(fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic), start, end)
+                Typeface.BOLD_ITALIC -> addStyle(
+                    SpanStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Italic
+                    ), start, end
+                )
             }
         }
         underlineSpans.forEach { underlineSpan ->
