@@ -5,7 +5,6 @@ import android.text.Spanned
 import android.text.style.*
 import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.*
@@ -56,7 +55,6 @@ fun HtmlText(
     var showHiddenText by remember(text) {
         mutableStateOf(false)
     }
-
     // 最终的AnnotatedString
     val annotatedString = remember(text, showHiddenText) {
         val internalText = hiddenPattern.replace(
@@ -191,7 +189,7 @@ fun HtmlText(
     )
 }
 
-fun Spanned.toAnnotatedString(
+private fun Spanned.toAnnotatedString(
     urlSpanStyle: SpanStyle = SpanStyle(
         color = Color.Blue,
         textDecoration = TextDecoration.Underline

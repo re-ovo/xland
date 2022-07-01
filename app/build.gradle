@@ -25,7 +25,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -53,8 +53,8 @@ dependencies {
     // AndroidX
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.4.2'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
-    implementation 'androidx.activity:activity-compose:1.4.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.0'
+    implementation 'androidx.activity:activity-compose:1.5.0'
 
     // Compose
     implementation "androidx.compose.ui:ui:$compose_version"
@@ -63,7 +63,7 @@ dependencies {
     implementation "androidx.compose.animation:animation:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
-    implementation 'androidx.compose.material3:material3:1.0.0-alpha13'
+    implementation 'androidx.compose.material3:material3:1.0.0-alpha14'
 
     // Bottom Sheet
     implementation 'io.github.dokar3:sheets:0.1.4'
@@ -88,7 +88,7 @@ dependencies {
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
 
     // Navigation for JetpackCompose
-    implementation "androidx.navigation:navigation-compose:2.5.0-rc02"
+    implementation "androidx.navigation:navigation-compose:2.5.0"
 
     // accompanist
     implementation "com.google.accompanist:accompanist-pager:$acc_version"
