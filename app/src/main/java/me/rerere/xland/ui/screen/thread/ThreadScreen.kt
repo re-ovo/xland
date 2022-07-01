@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
@@ -28,9 +29,11 @@ import me.rerere.xland.data.model.Reply
 import me.rerere.xland.ui.component.widget.*
 import me.rerere.xland.util.DataState
 import me.rerere.xland.util.TimeUtil
+import me.rerere.xland.util.shareText
 
 @Composable
 fun ThreadScreen(viewModel: ThreadViewModel = hiltViewModel()) {
+    val context = LocalContext.current
     Scaffold(
         topBar = {
             Md3TopBar(
@@ -41,11 +44,21 @@ fun ThreadScreen(viewModel: ThreadViewModel = hiltViewModel()) {
                     BackIcon()
                 },
                 actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(
+                        onClick = {
+
+                        }
+                    ) {
                         Icon(Icons.Outlined.Star, null)
                     }
 
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(
+                        onClick = {
+                            context.shareText(
+                                text = "https://www.nmbxd1.com/t/${viewModel.tid}"
+                            )
+                        }
+                    ) {
                         Icon(Icons.Outlined.Share, null)
                     }
                 }
@@ -100,7 +113,7 @@ fun ThreadScreen(viewModel: ThreadViewModel = hiltViewModel()) {
                     }
                 }
 
-                when(pager.loadState.append) {
+                when (pager.loadState.append) {
                     is LoadState.Loading -> {
                         item {
                             Box(
